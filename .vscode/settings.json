@@ -57,15 +57,21 @@
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
   ],
-    
+
+"java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+"java.format.settings.profile": "GoogleStyle",
+"java.format.settings.imports.onDemand": false,
+"java.format.settings.imports.regexp": "^[a-z.]*",
+
   "editor.detectIndentation": false,
   "editor.tabSize": 2,
   "editor.rulers": [
-      72,
-      80
+      92,
+      100
   ],
 
   "[java]": {
+    "editor.defaultFormatter": "redhat.java",
     "editor.formatOnSave": false
   }
 }
