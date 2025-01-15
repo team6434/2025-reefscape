@@ -85,9 +85,9 @@ public class RobotContainer {
       .of(drivebase.getSwerveDrive(), () -> -driverXbox.getLeftY(), () -> -driverXbox.getLeftX())
       .withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
       .deadband(OperatorConstants.DEADBAND).scaleTranslation(0.8).allianceRelativeControl(true);
-  Command driveFieldOrientedAnglularVelocitySim =
+  Command driveFieldOrientedAnglularVelocitySim = 
       drivebase.driveFieldOriented(driveAngularVelocitySim);
-
+  
   // Derive the heading axis with math!
   SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
       .withControllerHeadingAxis(() -> Math.sin(driverXbox.getRawAxis(2) * Math.PI) * (Math.PI * 2),
@@ -140,7 +140,6 @@ public class RobotContainer {
       driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       driverXbox.b().whileTrue(
           drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
-      driverXbox.y().whileTrue(drivebase.aimAtSpeaker(2));
       driverXbox.start().whileTrue(Commands.none());
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
@@ -159,7 +158,7 @@ public class RobotContainer {
   }
 
   public void setDriveMode() {
-    configureBindings(); // TODO is this a 2nd load of configureBindings?
+    configureBindings();
   }
 
   public void setMotorBrake(boolean brake) {
