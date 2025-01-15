@@ -91,17 +91,17 @@ public class SwerveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+    
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
     // Resynchronize absolute encoders and motor encoders periodically when they are not moving.
-    swerveDrive.setModuleEncoderAutoSynchronize(false, 1);
+    swerveDrive.setModuleEncoderAutoSynchronize(true, 1);
+    // If your absolute encoder is attached to your SparkMAX set the absolute encoder to be used.
+    // swerveDrive.pushOffsetsToEncoders();
 
     swerveDrive.setCosineCompensator(false);
     swerveDrive.setAngularVelocityCompensation(true, true, 0.1);
 
-    // If your absolute encoder is attached to your SparkMAX set the absolute encoder to be used.
-    // swerveDrive.pushOffsetsToEncoders();
-    
     if (visionDriveTest) {
       //setupPhotonVision();
       // Stop the odometry thread if we are using vision that way we can synchronize updates better.
