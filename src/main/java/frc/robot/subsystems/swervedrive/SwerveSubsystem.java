@@ -31,11 +31,13 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 //import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+
 //import frc.robot.subsystems.swervedrive.Vision.Cameras;
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +59,6 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
-
   /**
    * Swerve drive object.
    */
@@ -75,6 +76,8 @@ public class SwerveSubsystem extends SubsystemBase {
   //  */
   // private final AprilTagFieldLayout aprilTagFieldLayout =
   //     AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+
+  private boolean slowDriveDB = true;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -131,6 +134,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Shuffleboard();
     // When vision is enabled we must manually update odometry in SwerveDrive
     if (visionDriveTest) {
       swerveDrive.updateOdometry();
@@ -141,9 +145,22 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {}
 
-  /**
-   * Setup AutoBuilder for PathPlanner.
-   */
+  public void Shuffleboard() {
+    SmartDashboard.putBoolean("Slow Drive", slowDriveDB);
+  }
+
+  public void slowDriveUpdate() {
+    slowDriveDB = !slowDriveDB;
+  }
+
+  public double slowDriveToggle() {
+    if (slowDriveDB == false) {
+      return Constants.MIN;
+    } else {
+      return Constants.MAX;
+    }
+  }
+
   public void setupPathPlanner() {
     // Load the RobotConfig from the GUI settings. You should probably
     // store this in your Constants file

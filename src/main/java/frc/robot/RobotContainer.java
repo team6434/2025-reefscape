@@ -21,7 +21,6 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -59,7 +58,8 @@ public class RobotContainer {
       .of(drivebase.getSwerveDrive(), () -> driverXbox.getLeftY() * -1,
           () -> driverXbox.getLeftX() * -1)
       .withControllerRotationAxis(() -> driverXbox.getRightX() * -1)
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(0.8).allianceRelativeControl(true);
+      .deadband(OperatorConstants.DEADBAND).scaleTranslation(Constants.speed).allianceRelativeControl(true);
+
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
   // controls are front-left positive
@@ -84,7 +84,7 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocitySim = SwerveInputStream
       .of(drivebase.getSwerveDrive(), () -> -driverXbox.getLeftY(), () -> -driverXbox.getLeftX())
       .withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(0.8).allianceRelativeControl(true);
+      .deadband(OperatorConstants.DEADBAND).scaleTranslation(Constants.speed).allianceRelativeControl(true);
   Command driveFieldOrientedAnglularVelocitySim = 
       drivebase.driveFieldOriented(driveAngularVelocitySim);
   
@@ -122,6 +122,8 @@ public class RobotContainer {
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity
         : driveFieldOrientedAnglularVelocitySim);
 
+    driveAngularVelocity.scaleTranslation(Constants.MAX);
+
     if (Robot.isSimulation()) {
       driverXbox.start().onTrue(
           Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
@@ -140,7 +142,7 @@ public class RobotContainer {
       driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       driverXbox.b().whileTrue(
           drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
-      driverXbox.start().whileTrue(Commands.none());
+      driverXbox.start().whileTrue(Commands.runOnce(drivebase::slowDriveUpdate));
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
