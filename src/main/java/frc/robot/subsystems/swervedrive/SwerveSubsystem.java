@@ -153,11 +153,11 @@ public class SwerveSubsystem extends SubsystemBase {
     slowDriveDB = !slowDriveDB;
   }
 
-  public double slowDriveToggle() {
-    if (slowDriveDB == false) {
-      return Constants.MIN;
+  public double getScale() {
+    if (slowDriveDB) {
+      return Constants.SCALE_LOW;
     } else {
-      return Constants.MAX;
+      return Constants.SCALE_MAX;
     }
   }
 
