@@ -147,6 +147,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void Shuffleboard() {
     SmartDashboard.putBoolean("Slow Drive", slowDriveDB);
+    SmartDashboard.putNumber("Scale Current", getScale());
   }
 
   public void slowDriveUpdate() {
