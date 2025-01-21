@@ -21,6 +21,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -28,7 +29,7 @@ import swervelib.SwerveInputStream;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
 
@@ -54,50 +55,38 @@ public class RobotContainer {
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular
    * velocity.
    */
-  //TODO review .withControllerRotationAxis(() -> driverXbox.getRightX() * -1 perhaps IMU should be inverted.
+  // TODO review .withControllerRotationAxis(() -> driverXbox.getRightX() * -1 perhaps IMU should be
+  // inverted.
   SwerveInputStream driveAngularVelocity = SwerveInputStream
       .of(drivebase.getSwerveDrive(), () -> driverXbox.getLeftY() * -1,
           () -> driverXbox.getLeftX() * -1)
       .withControllerRotationAxis(() -> driverXbox.getRightX() * -1)
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(drivebase.getScale()).allianceRelativeControl(true);
-
-  // Applies deadbands and inverts controls because joysticks
-  // are back-right positive while robot
-  // controls are front-left positive
-  // left stick controls translation
-  // right stick controls the angular velocity of the robot
-  Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
+      .deadband(OperatorConstants.DEADBAND).scaleTranslation(drivebase.getScale())
+      .allianceRelativeControl(true);
 
   /**
    * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
    */
   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
       .withControllerHeadingAxis(driverXbox::getRightX, driverXbox::getRightY).headingWhile(true);
-  // Applies deadbands and inverts controls because joysticks
-  // are back-right positive while robot
-  // controls are front-left positive
-  // left stick controls translation
-  // right stick controls the desired angle NOT angular rotation
-  Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
 
-  Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
+  /**
+   * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
+   */
+  SwerveInputStream driveRobotOriented =
+      driveAngularVelocity.copy().robotRelative(true).allianceRelativeControl(false);
 
-  SwerveInputStream driveAngularVelocitySim = SwerveInputStream
+  SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream
       .of(drivebase.getSwerveDrive(), () -> -driverXbox.getLeftY(), () -> -driverXbox.getLeftX())
       .withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(drivebase.getScale()).allianceRelativeControl(true);
-  Command driveFieldOrientedAnglularVelocitySim = 
-      drivebase.driveFieldOriented(driveAngularVelocitySim);
-  
+      .deadband(OperatorConstants.DEADBAND).scaleTranslation(drivebase.getScale())
+      .allianceRelativeControl(true);
+
   // Derive the heading axis with math!
-  SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
+  SwerveInputStream driveDirectAngleKeyboard = driveAngularVelocityKeyboard.copy()
       .withControllerHeadingAxis(() -> Math.sin(driverXbox.getRawAxis(2) * Math.PI) * (Math.PI * 2),
           () -> Math.cos(driverXbox.getRawAxis(2) * Math.PI) * (Math.PI * 2))
       .headingWhile(true);
-  Command driveFieldOrientedDirectAngleSim = drivebase.driveFieldOriented(driveDirectAngleSim);
-
-  Command driveSetpointGenSim =
-      drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleSim);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -119,12 +108,25 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
   private void configureBindings() {
-    // (Condition) ? Return-On-True : Return-on-False
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity
-        : driveFieldOrientedAnglularVelocitySim);
+    Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
+    Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
+    Command driveRobotOrientedAngularVelocity = drivebase.driveFieldOriented(driveRobotOriented);
+    Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
+    Command driveFieldOrientedAnglularVelocityKeyboard =
+        drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
+    Command driveFieldOrientedDirectAngleKeyboard =
+        drivebase.driveFieldOriented(driveDirectAngleKeyboard);
+    Command driveSetpointGenKeyboard =
+        drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
 
+    if (RobotBase.isSimulation()) {
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocityKeyboard);
+    } else {
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    }
+    
     // TODO remove if .scaleTranslation(drivebase.getScale()) above works.
-    //driveAngularVelocity.scaleTranslation(drivebase.getScale());
+    // driveAngularVelocity.scaleTranslation(drivebase.getScale());
 
     if (Robot.isSimulation()) {
       driverXbox.start().onTrue(
@@ -133,13 +135,25 @@ public class RobotContainer {
     if (DriverStation.isTest()) {
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand()); // Spin in place instead of driving in a straight line
+      driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand()); // Spin in place instead of
+                                                                    // driving in a straight line
       driverXbox.x().whileTrue(
           drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
       driverXbox.start().whileTrue(Commands.runOnce(drivebase::slowDriveUpdate));
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly()); // TODO update to only allow this to run i.e. prevent drive output.
+      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly()); // TODO
+                                                                                                    // update
+                                                                                                    // to
+                                                                                                    // only
+                                                                                                    // allow
+                                                                                                    // this
+                                                                                                    // to
+                                                                                                    // run
+                                                                                                    // i.e.
+                                                                                                    // prevent
+                                                                                                    // drive
+                                                                                                    // output.
       driverXbox.rightBumper().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
     } else {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
@@ -148,7 +162,18 @@ public class RobotContainer {
       driverXbox.y().onTrue(Commands.none());
       driverXbox.start().whileTrue(Commands.runOnce(drivebase::slowDriveUpdate));
       driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly()); // TODO update to only allow this to run i.e. prevent drive output.
+      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly()); // TODO
+                                                                                                    // update
+                                                                                                    // to
+                                                                                                    // only
+                                                                                                    // allow
+                                                                                                    // this
+                                                                                                    // to
+                                                                                                    // run
+                                                                                                    // i.e.
+                                                                                                    // prevent
+                                                                                                    // drive
+                                                                                                    // output.
       driverXbox.rightBumper().onTrue(Commands.none());
     }
   }
