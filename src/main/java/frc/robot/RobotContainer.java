@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -30,7 +26,6 @@ public class RobotContainer {
 
   final CommandXboxController driverXbox = new CommandXboxController(0);
 
-  // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
@@ -42,22 +37,21 @@ public class RobotContainer {
       .of(drivebase.getSwerveDrive(), () -> driverXbox.getLeftY() * -1,
           () -> driverXbox.getLeftX() * -1)
       .withControllerRotationAxis(driverXbox::getRightX)
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(drivebase.getScale())
+      .deadband(OperatorConstants.DEADBAND).scaleTranslation(0.8)
       .allianceRelativeControl(true);
   SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream
       .of(drivebase.getSwerveDrive(), () -> -driverXbox.getLeftY(), () -> -driverXbox.getLeftX())
       .withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(drivebase.getScale())
+      .deadband(OperatorConstants.DEADBAND).scaleTranslation(0.8)
       .allianceRelativeControl(true);
 
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, IO devices, and commands.
    */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
-    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
   }
 
   /**
@@ -83,45 +77,14 @@ public class RobotContainer {
     // TODO remove if .scaleTranslation(drivebase.getScale()) above works.
     // driveAngularVelocity.scaleTranslation(drivebase.getScale());
 
-    if (Robot.isSimulation()) {
-      driverXbox.start().onTrue(
-          Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-    }
-    if (DriverStation.isTest()) {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand()); // Spin in place instead of
-                                                                    // driving in a straight line
-      driverXbox.x().whileTrue(
-          drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
-      driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-      driverXbox.start().onTrue(Commands.runOnce(drivebase::slowDriveUpdate));
-      driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    } else {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.b().onTrue(Commands.none());
-      driverXbox.x().onTrue(Commands.none());
-      driverXbox.y().onTrue(Commands.none());
-      driverXbox.start().whileTrue(Commands.runOnce(drivebase::slowDriveUpdate));
-      driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
-    }
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
-  }
-
-  public void setDriveMode() {
-    configureBindings();
+    driverXbox.a().onTrue(Commands.runOnce(drivebase::zeroGyro));
+    driverXbox.b().onTrue(Commands.runOnce(drivebase::centerModulesCommand));
+    driverXbox.x().onTrue(Commands.none());
+    driverXbox.y().onTrue(Commands.none());
+    driverXbox.start().onTrue(Commands.none());
+    driverXbox.back().whileTrue(Commands.none());
+    driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    driverXbox.rightBumper().onTrue(Commands.none());
   }
 
   public void setMotorBrake(boolean brake) {
