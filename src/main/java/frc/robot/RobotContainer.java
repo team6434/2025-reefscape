@@ -55,12 +55,13 @@ public class RobotContainer {
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular
    * velocity.
    */
-  // TODO review .withControllerRotationAxis(() -> driverXbox.getRightX() * -1 perhaps IMU should be
-  // inverted.
+  // TODO review .withControllerRotationAxis(() -> driverXbox.getRightX() * -1)
+  // perhaps IMU should be inverted.
+  // Test is place IMU is inverted remove comments if successful.
   SwerveInputStream driveAngularVelocity = SwerveInputStream
       .of(drivebase.getSwerveDrive(), () -> driverXbox.getLeftY() * -1,
           () -> driverXbox.getLeftX() * -1)
-      .withControllerRotationAxis(() -> driverXbox.getRightX() * -1)
+      .withControllerRotationAxis(driverXbox::getRightX)
       .deadband(OperatorConstants.DEADBAND).scaleTranslation(drivebase.getScale())
       .allianceRelativeControl(true);
 
@@ -109,15 +110,15 @@ public class RobotContainer {
    */
   private void configureBindings() {
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
-    Command driveRobotOrientedAngularVelocity = drivebase.driveFieldOriented(driveRobotOriented);
-    Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
+    //Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
+    //Command driveRobotOrientedAngularVelocity = drivebase.driveFieldOriented(driveRobotOriented);
+    //Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocityKeyboard =
         drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-    Command driveFieldOrientedDirectAngleKeyboard =
-        drivebase.driveFieldOriented(driveDirectAngleKeyboard);
-    Command driveSetpointGenKeyboard =
-        drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
+    //Command driveFieldOrientedDirectAngleKeyboard =
+    //    drivebase.driveFieldOriented(driveDirectAngleKeyboard);
+    //Command driveSetpointGenKeyboard =
+    //    drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
 
     if (RobotBase.isSimulation()) {
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocityKeyboard);
@@ -142,18 +143,7 @@ public class RobotContainer {
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
       driverXbox.start().whileTrue(Commands.runOnce(drivebase::slowDriveUpdate));
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly()); // TODO
-                                                                                                    // update
-                                                                                                    // to
-                                                                                                    // only
-                                                                                                    // allow
-                                                                                                    // this
-                                                                                                    // to
-                                                                                                    // run
-                                                                                                    // i.e.
-                                                                                                    // prevent
-                                                                                                    // drive
-                                                                                                    // output.
+      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
     } else {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
@@ -162,18 +152,7 @@ public class RobotContainer {
       driverXbox.y().onTrue(Commands.none());
       driverXbox.start().whileTrue(Commands.runOnce(drivebase::slowDriveUpdate));
       driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly()); // TODO
-                                                                                                    // update
-                                                                                                    // to
-                                                                                                    // only
-                                                                                                    // allow
-                                                                                                    // this
-                                                                                                    // to
-                                                                                                    // run
-                                                                                                    // i.e.
-                                                                                                    // prevent
-                                                                                                    // drive
-                                                                                                    // output.
+      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
     }
   }
