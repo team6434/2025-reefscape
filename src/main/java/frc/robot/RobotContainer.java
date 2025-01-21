@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -30,19 +29,14 @@ public class RobotContainer {
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
   /**
-   * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular
-   * velocity.
+   * Converts driver input into field-relative ChassisSpeeds controlled by angular velocity.
    */
-  SwerveInputStream driveAngularVelocity = SwerveInputStream
-      .of(drivebase.getSwerveDrive(), () -> driverXbox.getLeftY() * -1,
-          () -> driverXbox.getLeftX() * -1)
-      .withControllerRotationAxis(driverXbox::getRightX)
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(0.8)
-      .allianceRelativeControl(true);
-  SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream
-      .of(drivebase.getSwerveDrive(), () -> -driverXbox.getLeftY(), () -> -driverXbox.getLeftX())
-      .withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
-      .deadband(OperatorConstants.DEADBAND).scaleTranslation(0.8)
+  SwerveInputStream driveSwerve = SwerveInputStream
+      .of(drivebase.getSwerveDrive(), 
+          () -> -driverXbox.getLeftY(),
+          () -> -driverXbox.getLeftX())
+      .withControllerRotationAxis(() -> driverXbox.getRightX())
+      .deadband(OperatorConstants.DEADBAND)
       .allianceRelativeControl(true);
 
   /**
@@ -64,18 +58,13 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
   private void configureBindings() {
-    Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    Command driveFieldOrientedAnglularVelocityKeyboard =
-        drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-
     if (RobotBase.isSimulation()) {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocityKeyboard);
-    } else {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+      driveSwerve.withControllerHeadingAxis(
+          () -> -driverXbox.getLeftY(),
+          () -> -driverXbox.getLeftX()).
+        withControllerRotationAxis(() -> -driverXbox.getRawAxis(2));
     }
-    
-    // TODO remove if .scaleTranslation(drivebase.getScale()) above works.
-    // driveAngularVelocity.scaleTranslation(drivebase.getScale());
+    drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveSwerve));
 
     driverXbox.a().onTrue(Commands.runOnce(drivebase::zeroGyro));
     driverXbox.b().onTrue(Commands.runOnce(drivebase::centerModulesCommand));
