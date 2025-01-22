@@ -10,16 +10,12 @@
           "width": 300,
           "expanded": [
             "/SmartDashboard",
-            "/SmartDashboard/Field/Robot",
-            "/SmartDashboard/Swerve Drive/warnings",
-            "/SmartDashboard/Swerve Drive/errors",
-            "/SmartDashboard/Swerve Drive/infos",
             "/SmartDashboard/swerve",
-            "/SmartDashboard/Field"
+            "/SmartDashboard/swerve/measuredStates"
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 5,
           "tabs": [
             {
               "type": 0,
@@ -31,9 +27,30 @@
             },
             {
               "type": 1,
-              "title": "Line Graph",
+              "title": "Speed",
               "controller": {
-                "leftSources": [],
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/swerve/desiredStates/1",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/swerve/measuredStates/1",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
                 "rightSources": [],
                 "discreteSources": [],
                 "leftLockedRange": null,
@@ -49,9 +66,9 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "g7g7us4tk30zr2zcut98gkg8gw31im8y",
+              "controllerUUID": "5d5xyfutmcrw0tl31c7uo1grvtrih2ep",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 204
             },
             {
               "type": 2,
@@ -72,8 +89,8 @@
                 "game": "2025 Field",
                 "bumpers": "auto",
                 "origin": "auto",
-                "orientation": 0,
-                "size": 30
+                "orientation": 1,
+                "size": 27
               },
               "controllerUUID": "20v847wt7q7zbkxddvd7gdryebuwdk4w",
               "renderer": null,
@@ -97,16 +114,16 @@
                   }
                 ],
                 "game": "2025 Field",
-                "origin": "blue"
+                "origin": "auto"
               },
               "controllerUUID": "29uws023ubo03hkdkc99t8hct4ogklxf",
               "renderer": {
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  9.327434118938555,
-                  5.532013886622404,
-                  -7.869422405850395
+                  4.0128901456154304,
+                  4.936543115494428,
+                  -11.76706411402528
                 ],
                 "cameraTarget": [
                   0,
@@ -114,6 +131,30 @@
                   0
                 ]
               },
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "z0dfriwbjzhhi9zru5mmvbh7enl7jekr",
+              "renderer": null,
               "controlsHeight": 200
             },
             {
@@ -132,7 +173,7 @@
                   },
                   {
                     "type": "statesLegacy",
-                    "logKey": "NT:/SmartDashboard/swerve/desiredStates",
+                    "logKey": "NT:/SmartDashboard/swerve/measuredStates",
                     "logType": "NumberArray",
                     "visible": true,
                     "options": {
