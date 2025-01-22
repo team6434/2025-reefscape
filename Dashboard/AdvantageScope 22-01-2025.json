@@ -1,0 +1,161 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 1552,
+      "height": 840,
+      "state": {
+        "sidebar": {
+          "width": 300,
+          "expanded": [
+            "/SmartDashboard",
+            "/SmartDashboard/Field/Robot",
+            "/SmartDashboard/Swerve Drive/warnings",
+            "/SmartDashboard/Swerve Drive/errors",
+            "/SmartDashboard/Swerve Drive/infos",
+            "/SmartDashboard/swerve",
+            "/SmartDashboard/Field"
+          ]
+        },
+        "tabs": {
+          "selected": 3,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "j2vl2vfb3uhrzbf6400ddwvxaj23futm",
+              "renderer": "#/",
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "g7g7us4tk30zr2zcut98gkg8gw31im8y",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "Odometry",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robotLegacy",
+                    "logKey": "NT:/SmartDashboard/Field/Robot",
+                    "logType": "NumberArray",
+                    "visible": true,
+                    "options": {
+                      "format": "Pose2d",
+                      "units": "degrees"
+                    }
+                  }
+                ],
+                "game": "2025 Field",
+                "bumpers": "auto",
+                "origin": "auto",
+                "orientation": 0,
+                "size": 30
+              },
+              "controllerUUID": "20v847wt7q7zbkxddvd7gdryebuwdk4w",
+              "renderer": null,
+              "controlsHeight": 206
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robotLegacy",
+                    "logKey": "NT:/SmartDashboard/Field/Robot",
+                    "logType": "NumberArray",
+                    "visible": true,
+                    "options": {
+                      "model": "2025 KitBot",
+                      "format": "Pose2d",
+                      "units": "degrees"
+                    }
+                  }
+                ],
+                "game": "2025 Field",
+                "origin": "blue"
+              },
+              "controllerUUID": "29uws023ubo03hkdkc99t8hct4ogklxf",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  9.327434118938555,
+                  5.532013886622404,
+                  -7.869422405850395
+                ],
+                "cameraTarget": [
+                  0,
+                  0.5,
+                  0
+                ]
+              },
+              "controlsHeight": 200
+            },
+            {
+              "type": 9,
+              "title": "Swerve",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "rotationLegacy",
+                    "logKey": "NT:/SmartDashboard/swerve/robotRotation",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "units": "degrees"
+                    }
+                  },
+                  {
+                    "type": "statesLegacy",
+                    "logKey": "NT:/SmartDashboard/swerve/desiredStates",
+                    "logType": "NumberArray",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "arrangement": "0,1,2,3",
+                      "units": "degrees"
+                    }
+                  }
+                ],
+                "maxSpeed": 5,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "774jrenxucxpu2wuze0bb8naf6gzc2yi",
+              "renderer": null,
+              "controlsHeight": 200
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "4.1.1"
+}

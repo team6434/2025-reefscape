@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -35,7 +37,7 @@ public class RobotContainer {
       .of(drivebase.getSwerveDrive(), 
           () -> -driverXbox.getLeftY(),
           () -> -driverXbox.getLeftX())
-      .withControllerRotationAxis(() -> driverXbox.getRightX())
+      .withControllerRotationAxis(() -> -driverXbox.getRightX())
       .deadband(OperatorConstants.DEADBAND)
       .allianceRelativeControl(true);
 
@@ -62,7 +64,7 @@ public class RobotContainer {
       driveSwerve.withControllerHeadingAxis(
           () -> -driverXbox.getLeftY(),
           () -> -driverXbox.getLeftX()).
-        withControllerRotationAxis(() -> -driverXbox.getRawAxis(2));
+        withControllerRotationAxis(() -> driverXbox.getRawAxis(2));
     }
     drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveSwerve));
 
@@ -80,4 +82,8 @@ public class RobotContainer {
     drivebase.setMotorBrake(brake);
   }
 
+  public void SmartDashboard() {
+    // SmartDashboard.putData("Swerve Input Stream:", driveSwerve);
+
+  }
 }
