@@ -59,10 +59,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     if (RobotBase.isSimulation()) {
-      driveSwerve.withControllerHeadingAxis(
-          () -> -driverXbox.getLeftY(),
-          () -> -driverXbox.getLeftX()).
-        withControllerRotationAxis(() -> driverXbox.getRawAxis(2));
+      driveSwerve.withControllerRotationAxis(() -> -driverXbox.getRawAxis(2));
     }
     drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveSwerve));
 
