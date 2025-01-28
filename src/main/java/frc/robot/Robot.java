@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends TimedRobot {
   
   private static Robot instance;
+  private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private Timer disabledTimer;
 
@@ -91,7 +93,12 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_robotContainer.setMotorBrake(true);
-  }
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
+}
 
   /**
    * This function is called periodically during autonomous.
@@ -112,8 +119,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+      // Cancels all running commands at the start of test mode.
+      if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    } else {
+      CommandScheduler.getInstance().cancelAll();
+    }
   }
 
   /**

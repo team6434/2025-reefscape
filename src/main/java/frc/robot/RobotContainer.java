@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,10 +28,8 @@ import swervelib.SwerveInputStream;
 public class RobotContainer {
 
   final CommandXboxController driverXbox = new CommandXboxController(0);
-
   private final SwerveSubsystem drivebase =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-
   /**
    * Converts driver input into field-relative ChassisSpeeds controlled by angular velocity.
    */
@@ -62,15 +64,29 @@ public class RobotContainer {
       driveSwerve.withControllerRotationAxis(() -> -driverXbox.getRawAxis(2));
     }
     drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveSwerve));
-
-    driverXbox.a().onTrue(Commands.runOnce(drivebase::zeroGyro));
-    driverXbox.b().onTrue(Commands.runOnce(drivebase::centerModulesCommand));
-    driverXbox.x().onTrue(Commands.none());
-    driverXbox.y().onTrue(Commands.none());
-    driverXbox.start().onTrue(Commands.none());
-    driverXbox.back().whileTrue(Commands.none());
+    if (DriverStation.isTest()) {
+      driverXbox.a().onTrue(Commands.runOnce(drivebase::zeroGyro));
+      driverXbox.b().onTrue(Commands.runOnce(drivebase::centerModulesCommand));
+      driverXbox.x().whileTrue(
+          drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
+      driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
+    } else {
+      driverXbox.a().onTrue(Commands.none());
+      driverXbox.b().onTrue(Commands.none());
+      driverXbox.x().onTrue(Commands.none());
+      driverXbox.y().onTrue(Commands.none());
+      driverXbox.back().onTrue(Commands.none());
+      driverXbox.rightBumper().onTrue(Commands.none());
+      driverXbox.leftTrigger().onTrue(Commands.none());
+      driverXbox.rightTrigger().onTrue(Commands.none());
+    }      
+    driverXbox.start().onTrue(Commands.runOnce(drivebase::slowDriveUpdate));
     driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    driverXbox.rightBumper().onTrue(Commands.none());
+  }
+
+  public Command getAutonomousCommand() {
+    // An example command will be run in autonomous
+    return drivebase.getAutonomousCommand("New Auto");
   }
 
   public void setMotorBrake(boolean brake) {
