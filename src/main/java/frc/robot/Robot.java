@@ -119,8 +119,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-      // Cancels all running commands at the start of test mode.
-      if (m_autonomousCommand != null) {
+    // Cancels all running commands at the start of test mode.
+    if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     } else {
       CommandScheduler.getInstance().cancelAll();

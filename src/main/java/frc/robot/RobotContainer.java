@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import swervelib.SwerveInputStream;
 
 /**
@@ -63,7 +64,10 @@ public class RobotContainer {
     if (RobotBase.isSimulation()) {
       driveSwerve.withControllerRotationAxis(() -> -driverXbox.getRawAxis(2));
     }
-    drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveSwerve));
+    // TODO test toggle of slow drive.
+    // TODO test application of drive scale.
+    //drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveSwerve));
+    drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveSwerve.scaleTranslation(drivebase.getScale())));
     if (DriverStation.isTest()) {
       driverXbox.a().onTrue(Commands.runOnce(drivebase::zeroGyro));
       driverXbox.b().onTrue(Commands.runOnce(drivebase::centerModulesCommand));
@@ -85,8 +89,13 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    try {
+        // An example command will be run in autonomous
+        return drivebase.getAutonomousCommand("Driveout");
+    } catch (Exception e) {
+        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+        return Commands.none();
+    }
   }
 
   public void setMotorBrake(boolean brake) {

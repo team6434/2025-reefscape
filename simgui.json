@@ -73,6 +73,7 @@
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
+      "/SmartDashboard/Scheduler": "Scheduler",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Swerve Drive": "Alerts",
       "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
